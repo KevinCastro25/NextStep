@@ -154,7 +154,9 @@
       <a href="#faq">Preguntas</a>
     </nav>
     <div class="search-wrap">
-      <input id="q" type="search" placeholder="Buscar tenis o marca..." oninput="lim=24;render()" aria-label="Buscar tenis">
+      <span class="search-ico" aria-hidden="true">🔍</span>
+      <input id="q" type="search" placeholder="Buscar por color, talla (ej: 38), dama, hombre..." oninput="onSearchInput()" aria-label="Buscar tenis">
+      <button id="q-clear" class="search-clear" type="button" onclick="clearSearch()" aria-label="Limpiar búsqueda" style="display:none">✕</button>
     </div>
     <button id="cb" type="button" onclick="openC()">🛒 Carrito <span id="cc">0</span></button>
   </header>
@@ -187,7 +189,7 @@
   </section>
 
   <!-- Categorías -->
-  <h2 class="sec">Escoge por <span>categoría</span></h2>
+  <h2 class="sec" id="sec-categorias">Escoge por <span>categoría</span></h2>
   <div class="tiles" id="tiles"></div>
 
   <!-- Reels / Videos -->
@@ -195,7 +197,7 @@
 
   <!-- Catálogo Completo -->
   <div class="sec-head" id="tenis">
-    <h2 class="sec">Todos los <span>tenis</span></h2>
+    <h2 class="sec" id="tenis-title">Todos los <span>tenis</span></h2>
     <span class="sec-sub" id="catalog-count">10 referencias listas para despacho</span>
   </div>
   <div class="bar" id="bar">

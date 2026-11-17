@@ -167,7 +167,7 @@ $("#hero").ontouchend = e => {
   if (Math.abs(d) > 40) go(d < 0 ? 1 : -1);
 };
 
-// ---------- 4. Renderizado de Tarjetas de Producto ----------
+// ---------- 4. Buscador Inteligente y Renderizado de Tarjetas ----------
 const vid = u => {
   const y = u.match(/(?:youtu\.be\/|v=|shorts\/)([\w-]{11})/);
   return y
@@ -175,40 +175,126 @@ const vid = u => {
     : `<video src="${u}" controls muted playsinline loop preload="metadata"></video>`;
 };
 
+const normStr = s =>
+  String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
+const escapeHtml = s =>
+  String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function getSearchIndex(p) {
+  if (p._idx) return p._idx;
+  const gText =
+    p.g === "m"
+      ? "mujer mujeres dama damas femenino chica"
+      : p.g === "h"
+        ? "hombre hombres caballero caballeros masculino"
+        : "unisex hombre hombres mujer mujeres dama damas caballero";
+  const typeText =
+    "tenis zapato zapatos zapatilla zapatillas calzado deportivo deportivos urbano urbanos casual casuales correr running gym moda bota botas";
+  const colors = [...new Set((p.v || []).map(v => v[1]).filter(Boolean))].join(" ");
+  const sizes = [...new Set((p.v || []).map(v => v[2]).filter(Boolean))]
+    .map(sz => `talla${sz} talla ${sz} ${sz}`)
+    .join(" ");
+  p._idx = normStr(`${p.n} ${p.id} ${p.tag || ""} ${gText} ${typeText} ${colors} ${sizes}`);
+  return p._idx;
+}
+
+function matchesQuery(p, q) {
+  if (!q) return true;
+  const idx = getSearchIndex(p);
+  const tokens = normStr(q).split(/\s+/).filter(Boolean);
+  return tokens.every(tok => {
+    if (idx.includes(tok)) return true;
+    if (tok.length > 3 && tok.endsWith("es") && idx.includes(tok.slice(0, -2))) return true;
+    if (tok.length > 3 && tok.endsWith("s") && idx.includes(tok.slice(0, -1))) return true;
+    return false;
+  });
+}
+
+function onSearchInput() {
+  lim = 24;
+  if (flt !== "all") {
+    flt = "all";
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.f == "all"));
+  }
+  render();
+}
+
+function clearSearch() {
+  const qEl = $("#q");
+  if (qEl) qEl.value = "";
+  lim = 24;
+  render();
+}
+
 const card = p => {
+  const cs = [...new Set((p.v || []).map(v => v[1]).filter(Boolean))];
+  const al = [...new Set((p.v || []).map(v => v[2]).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
+  const stockVal = p.stock || 5;
+  const stockPct = Math.min(92, Math.max(45, 100 - stockVal * 8));
+  const minSize = al[0] || "36";
+  const maxSize = al[al.length - 1] || "43";
+
   return `
   <article class="card reveal" onclick="openP(${p.id})">
     <div class="im">
       <img loading="lazy" src="${p.img}" alt="${p.n}">
       <span class="badge-discount">-${pc(p)}% OFF</span>
-      <span class="badge-cod">💵 Contraentrega</span>
       ${p.tag ? `<span class="badge-tag">${p.tag}</span>` : ""}
       ${CFG.videos[p.id] ? '<span class="vb">▶ Video</span>' : ""}
+      <div class="im-trust-bar">
+        <span>🚚 Envío Gratis</span>
+        <span>💵 Contraentrega</span>
+      </div>
     </div>
     <div class="card-info">
       <div class="card-meta">
-        <span class="stars">★ ${p.rate || 4.9}</span>
-        <span class="card-sold">${p.sold || 120}+ vendidos</span>
+        <span class="stars">★★★★★ ${p.rate || 4.9}</span>
+        <span class="card-sold">🔥 +${p.sold || 180} vendidos</span>
       </div>
       <h3 class="card-title">${p.n}</h3>
-      <div class="card-pricing">
+      <div class="card-specs">
+        <span>📏 Tallas: ${minSize}–${maxSize}</span>
+        <span>🎨 ${cs.length || 1} ${cs.length === 1 ? "color" : "colores"}</span>
+      </div>
+      <div class="card-price-box">
         <div class="pr">
           <b>${money(p.p)}</b>
           <s>${money(p.o)}</s>
         </div>
-        <span class="card-savings">Ahorras ${money(p.o - p.p)}</span>
+        <span class="card-savings">AHORRAS ${money(p.o - p.p)}</span>
       </div>
-      <div class="card-bottom">
-        <span class="card-shipping">🚚 Envío Gratis</span>
-        <button class="card-btn cta-shine" type="button" aria-label="Elegir talla de ${p.n}">Ver Tallas →</button>
+      <div class="card-urgency">
+        <span class="urgency-text">⚡ ¡Últimos ${stockVal} pares para despacho hoy!</span>
+        <div class="urgency-mini-bar"><div style="width:${stockPct}%"></div></div>
       </div>
+      <button class="card-btn cta-shine" type="button" aria-label="Comprar ${p.n}">
+        🛒 ¡LO QUIERO! · ELEGIR TALLA
+      </button>
     </div>
   </article>`;
 };
 
 function render() {
-  const q = $("#q").value.trim().toLowerCase();
+  const qEl = $("#q");
+  const rawQ = qEl ? qEl.value.trim() : "";
   const sortMode = $("#sort") ? $("#sort").value : "featured";
+  const isSearching = rawQ.length > 0;
+
+  document.body.classList.toggle("is-searching", isSearching);
+  const clearBtn = $("#q-clear");
+  if (clearBtn) clearBtn.style.display = isSearching ? "flex" : "none";
+
+  const titleEl = $("#tenis-title");
+  if (titleEl) {
+    titleEl.innerHTML = isSearching
+      ? `Resultados para <span>"${escapeHtml(rawQ)}"</span>`
+      : `Todos los <span>tenis</span>`;
+  }
 
   $("#of").innerHTML = [...P]
     .sort((a, b) => b.o - b.p - (a.o - a.p))
@@ -217,7 +303,7 @@ function render() {
     .join("");
 
   let list = P.filter(
-    p => (flt == "all" || p.g == "u" || p.g == flt) && p.n.toLowerCase().includes(q)
+    p => (flt == "all" || p.g == "u" || p.g == flt) && matchesQuery(p, rawQ)
   );
 
   if (sortMode === "discount") {
@@ -232,7 +318,10 @@ function render() {
 
   $("#catalog-count").textContent = `${list.length} ${list.length === 1 ? "referencia disponible" : "referencias listas para despacho"}`;
   const visible = list.slice(0, lim);
-  $("#grid").innerHTML = visible.map(card).join("") || "<p class='mu'>No encontramos tenis con ese filtro.</p>";
+  $("#grid").innerHTML = visible.length
+    ? visible.map(card).join("")
+    : `<div class="empty-search"><p class="mu">No encontramos tenis para "${escapeHtml(rawQ)}".</p><button class="cta-more" type="button" onclick="clearSearch()">Ver todo el catálogo</button></div>`;
+
   const moreBtn = $("#more");
   if (moreBtn) {
     moreBtn.style.display = list.length > lim ? "inline-block" : "none";
@@ -252,11 +341,15 @@ function searchTag(term) {
   const q = $("#q");
   if (q) q.value = term;
   if (term.toLowerCase() === "hombre") {
+    if (q) q.value = "";
     setF("h");
   } else if (term.toLowerCase() === "dama" || term.toLowerCase() === "mujer") {
+    if (q) q.value = "";
     setF("m");
   } else {
-    setF("all");
+    flt = "all";
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.f == "all"));
+    render();
   }
   const target = $("#tenis");
   if (target) target.scrollIntoView({ behavior: "smooth" });
@@ -361,6 +454,12 @@ function updateWaWidget(product) {
 updateWaWidget(null);
 
 // ---------- 7. Modal de Producto de Alta Conversión ----------
+function syncBodyLock() {
+  const locked = $("#ov").classList.contains("on") || $("#dr").classList.contains("on");
+  document.body.classList.toggle("modal-open", locked);
+  document.documentElement.classList.toggle("modal-open", locked);
+}
+
 function openP(id) {
   cur = P.find(p => p.id == id);
   if (!cur) return;
@@ -368,10 +467,14 @@ function openP(id) {
   drawM();
   updateWaWidget(cur);
   $("#ov").classList.add("on");
+  syncBodyLock();
+  const mdEl = $("#md");
+  if (mdEl) mdEl.scrollTop = 0;
 }
 
 function closeM() {
   $("#ov").classList.remove("on");
+  syncBodyLock();
   updateWaWidget(null);
 }
 
@@ -398,6 +501,7 @@ function drawM() {
   const pack1Price = p.p;
   const pack2Price = Math.round(p.p * 2 * (1 - CFG.promo2x / 100));
   const onlinePrice = Math.round(p.p * (100 - CFG.off) / 100);
+  const stockVal = p.stock || 5;
 
   $("#md").innerHTML = `
     <div class="md-gallery">
@@ -410,8 +514,27 @@ function drawM() {
                  <button type="button" class="${sel.m == "v" ? "on" : ""}" onclick="sel.m='v';drawM()">▶ Video Oficial</button>
                </div>` : ""}
       </div>
+
+      ${
+        cs.length
+          ? `<div class="md-quick-colors">
+               <span class="quick-colors-label">🎨 Tonos disponibles (${cs.length}):</span>
+               <div class="quick-colors-row">
+                 ${cs.map(c => {
+                   const thumb = (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? `<img src="${CFG.imgs[p.id][c]}" alt="" class="color-thumb-mini">` : "";
+                   const active = c == sel.c;
+                   return `<button type="button" class="quick-color-pill ${active ? "on" : ""}" onclick="sel.c='${c}';sel.t='';sel.m='f';drawM()">${thumb}<span>${active ? "✓ " : ""}${c}</span></button>`;
+                 }).join("")}
+               </div>
+             </div>`
+          : ""
+      }
+
       <div class="md-carriers-card">
-        <span class="carriers-title">📦 Despacho prioritario asegurado con:</span>
+        <div class="dispatch-live-row">
+          <span class="dispatch-dot"></span>
+          <span>🚀 Pide hoy y despachamos en menos de 24h</span>
+        </div>
         <div class="carriers-pills">
           <span class="carrier-pill servientrega">Servientrega</span>
           <span class="carrier-pill interrapidisimo">Interrapidísimo</span>
@@ -419,12 +542,17 @@ function drawM() {
           <span class="carrier-pill envia">Envía</span>
         </div>
       </div>
-      <div class="md-assurance-box">
-        <span>🔒</span>
-        <div>
-          <strong>Compra 100% Sin Riesgo</strong><br>
-          <small>No pagas por adelantado, revisas y pagas en efectivo al mensajero.</small>
-        </div>
+
+      <div class="md-conversion-perks">
+        <div>✅ Pides ahora sin tarjeta y pagas en efectivo al recibir.</div>
+        <div>✅ Envío 100% GRATIS hasta la puerta de tu casa.</div>
+        <div>✅ Cambio de talla garantizado y 30 días de garantía.</div>
+      </div>
+
+      <div class="md-mini-review">
+        <div class="mini-review-stars">★★★★★ <span>5.0 / 5.0</span></div>
+        <p>“Excelente calidad y horma exacta. Me llegaron súper rápido y pagué en efectivo cuando el mensajero me entregó el paquete.”</p>
+        <div class="mini-review-author">— Compra Contraentrega Verificada ✓</div>
       </div>
     </div>
 
@@ -457,8 +585,42 @@ function drawM() {
         </div>
       </div>
 
-      <!-- Selector de Combo / Descuento 2 Pares -->
-      <div class="md-section-label">Selecciona tu paquete de compra:</div>
+      <!-- 1. Selector de Color -->
+      ${
+        cs.length
+          ? `<div class="md-selector-header">
+               <span class="selector-title">1. Elige Color: <strong class="highlight-val">${sel.c}</strong></span>
+             </div>
+             <div class="color-options-wrap">
+               ${cs.map(c => {
+                 const thumb = (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? `<img src="${CFG.imgs[p.id][c]}" alt="" class="color-thumb-mini">` : "";
+                 return `<button type="button" class="color-chip ${c == sel.c ? "on" : ""}" onclick="sel.c='${c}';sel.t='';sel.m='f';drawM()">${thumb}<span>${c}</span></button>`;
+               }).join("")}
+             </div>`
+          : ""
+      }
+
+      <!-- 2. Selector de Talla Nacional -->
+      <div class="md-selector-header">
+        <span class="selector-title">2. Elige tu Talla Nacional: <strong class="highlight-val">${sel.t || "Selecciona una opción"}</strong></span>
+        <button type="button" class="sz-guide-link" onclick="toggleSizeGuide()">📏 ${sel.guide ? "Ocultar guía" : "Guía de tallas (cm)"}</button>
+      </div>
+
+      ${
+        sel.guide && typeof SIZE_GUIDE !== "undefined"
+          ? `<div class="sz-table-card">
+               <div class="sz-table-intro">Horma estándar nacional colombiana. Si calzas 38 normal, pide 38:</div>
+               <div class="sz-table-grid">${SIZE_GUIDE.map(s => `<div><b>Talla ${s[0]}</b><small>${s[1]}</small></div>`).join("")}</div>
+             </div>`
+          : ""
+      }
+
+      <div class="size-options-grid">
+        ${ts.map(t => `<button type="button" class="size-tile ${t == sel.t ? "on" : ""}" onclick="sel.t='${t}';drawM()">${t}</button>`).join("")}
+      </div>
+
+      <!-- 3. Selector de Combo / Descuento 2 Pares -->
+      <div class="md-section-label">3. Aprovecha tu oferta por paquete:</div>
       <div class="pack-grid">
         <div class="pack-opt ${sel.pack === 1 ? "on" : ""}" onclick="setPack(1)" role="button" tabindex="0">
           <div class="pack-radio">${sel.pack === 1 ? "●" : "○"}</div>
@@ -479,47 +641,13 @@ function drawM() {
         </div>
       </div>
 
-      <!-- Selector de Color -->
-      ${
-        cs.length
-          ? `<div class="md-selector-header">
-               <span class="selector-title">1. Color: <strong class="highlight-val">${sel.c}</strong></span>
-             </div>
-             <div class="color-options-wrap">
-               ${cs.map(c => {
-                 const thumb = (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? `<img src="${CFG.imgs[p.id][c]}" alt="" class="color-thumb-mini">` : "";
-                 return `<button type="button" class="color-chip ${c == sel.c ? "on" : ""}" onclick="sel.c='${c}';sel.t='';sel.m='f';drawM()">${thumb}<span>${c}</span></button>`;
-               }).join("")}
-             </div>`
-          : ""
-      }
-
-      <!-- Selector de Talla -->
-      <div class="md-selector-header">
-        <span class="selector-title">2. Talla Nacional: <strong class="highlight-val">${sel.t || "Selecciona una opción"}</strong></span>
-        <button type="button" class="sz-guide-link" onclick="toggleSizeGuide()">📏 ${sel.guide ? "Ocultar guía" : "Guía de tallas (cm)"}</button>
-      </div>
-
-      ${
-        sel.guide && typeof SIZE_GUIDE !== "undefined"
-          ? `<div class="sz-table-card">
-               <div class="sz-table-intro">Horma estándar nacional colombiana. Si calzas 38 normal, pide 38:</div>
-               <div class="sz-table-grid">${SIZE_GUIDE.map(s => `<div><b>Talla ${s[0]}</b><small>${s[1]}</small></div>`).join("")}</div>
-             </div>`
-          : ""
-      }
-
-      <div class="size-options-grid">
-        ${ts.map(t => `<button type="button" class="size-tile ${t == sel.t ? "on" : ""}" onclick="sel.t='${t}';drawM()">${t}</button>`).join("")}
-      </div>
-
       <!-- Barra de Urgencia y Stock -->
       <div class="stock-urgency-box">
         <div class="stock-urgency-header">
-          <span>🔥 <b>¡Alta demanda!</b> Quedan pocas unidades en bodega</span>
+          <span>🔥 <b>¡Alta demanda!</b> Solo quedan ${stockVal} pares en bodega</span>
           <span class="stock-countdown">Despacho en 24h</span>
         </div>
-        <div class="stock-urgency-track"><div class="stock-urgency-fill" style="width:84%"></div></div>
+        <div class="stock-urgency-track"><div class="stock-urgency-fill" style="width:86%"></div></div>
       </div>
 
       <!-- Botones Principales de Compra (Llamativos y de Alta Conversión) -->
@@ -554,7 +682,7 @@ function drawM() {
           <span class="trust-icon">💵</span>
           <div>
             <b>Pagas al Recibir</b>
-            <small>Cero riesgo con pago contraentrega</small>
+            <small>Cero riesgo contraentrega</small>
           </div>
         </div>
         <div class="trust-pillar">
@@ -566,8 +694,8 @@ function drawM() {
         </div>
       </div>
 
-      <!-- Acordeones informativos -->
-      <details class="md-details" open>
+      <!-- Acordeones informativos compactos -->
+      <details class="md-details">
         <summary>👟 Características y Horma</summary>
         <div class="details-body">
           <ul>
@@ -646,14 +774,25 @@ function waProduct() {
 // ---------- 8. Carrito y Checkout Contraentrega Dropi ----------
 function openC() {
   drawC();
-  $("#dr").classList.add("on");
+  const drEl = $("#dr");
+  if (drEl) drEl.scrollTop = 0;
+  drEl.classList.add("on");
   $("#bk").classList.add("on");
+  syncBodyLock();
 }
 
 function closeC() {
   $("#dr").classList.remove("on");
   $("#bk").classList.remove("on");
+  syncBodyLock();
 }
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    if ($("#dr").classList.contains("on")) closeC();
+    else if ($("#ov").classList.contains("on")) closeM();
+  }
+});
 
 function drawC() {
   $("#items").innerHTML = cart.length

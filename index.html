@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NextStep · Tenis para cada paso · Pago Contraentrega Colombia</title>
+  <meta name="description" content="Compra tenis urbanos y deportivos en Colombia con pago contraentrega, envío gratis a todo el país y despacho inmediato por Dropi.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Marquesina superior con botón accesible de pausa/reanudar -->
+  <div class="mq" id="mq-wrap">
+    <div id="mq"></div>
+    <button class="mq-toggle" id="mq-toggle" type="button" aria-label="Pausar barra de anuncios" title="Pausar barra de anuncios">⏸</button>
+  </div>
+
+  <!-- Barra de oferta relámpago con temporizador -->
+  <div class="flash-bar">
+    <span class="flash-pill">⚡ Solo por hoy</span>
+    <span>ENVÍO GRATIS A TODO COLOMBIA + PAGAS AL RECIBIR EN TU CASA</span>
+    <span class="flash-timer" id="flash-timer">02:44:59</span>
+  </div>
+
+  <!-- Header Sticky -->
+  <header>
+    <a href="#" class="logo">NextStep<b>.</b> <span class="logo-tag">CONTRAENTREGA</span></a>
+    <nav>
+      <a href="#ofertas">🔥 Ofertas</a>
+      <a href="#tenis" onclick="setF('h')">Hombre</a>
+      <a href="#tenis" onclick="setF('m')">Mujer</a>
+      <a href="#resenas">Reseñas</a>
+      <a href="#faq">Preguntas</a>
+    </nav>
+    <div class="search-wrap">
+      <input id="q" type="search" placeholder="Buscar tenis..." oninput="render()" aria-label="Buscar tenis">
+    </div>
+    <button id="cb" type="button" onclick="openC()">🛒 Carrito <span id="cc">0</span></button>
+  </header>
+
+  <!-- Hero Slider -->
+  <section class="hero" id="hero" aria-label="Promociones principales"></section>
+
+  <!-- Trust Bar -->
+  <div class="tr">
+    <div>🚚 Envío gratis<small>A más de 1.000 municipios</small></div>
+    <div>💵 Paga al recibir<small>Efectivo o transferencia en tu puerta</small></div>
+    <div>🔒 Pago seguro<small>Tarjeta, PSE y Nequi con descuento</small></div>
+    <div>↩ Cambio por talla<small>Garantía y respaldo directo</small></div>
+  </div>
+
+  <!-- Ofertas del momento -->
+  <div class="sec-head" id="ofertas">
+    <h2 class="sec">Ofertas <span>del momento</span></h2>
+    <span class="sec-sub">🔥 Unidades limitadas en bodega</span>
+  </div>
+  <div class="grid" id="of"></div>
+
+  <!-- Banner promocional de venta cruzada 2 pares -->
+  <section class="promo-banner" aria-label="Promoción por volumen">
+    <div>
+      <h3>🔥 ¡Combo NextStep! <span>Lleva 2 pares</span> y obtén 10% OFF extra</h3>
+      <p>Combina cualquier modelo, talla o color. ¡El envío sigue siendo 100% GRATIS y pagas al recibir!</p>
+    </div>
+    <a href="#tenis" class="cta cta-shine">Armar mi combo ahora →</a>
+  </section>
+
+  <!-- Categorías -->
+  <h2 class="sec">Escoge por <span>categoría</span></h2>
+  <div class="tiles" id="tiles"></div>
+
+  <!-- Reels / Videos -->
+  <div id="reel"></div>
+
+  <!-- Catálogo Completo -->
+  <div class="sec-head" id="tenis">
+    <h2 class="sec">Todos los <span>tenis</span></h2>
+    <span class="sec-sub" id="catalog-count">10 referencias listas para despacho</span>
+  </div>
+  <div class="bar" id="bar">
+    <div class="chips">
+      <button class="chip on" type="button" data-f="all">Todos</button>
+      <button class="chip" type="button" data-f="h">Hombre</button>
+      <button class="chip" type="button" data-f="m">Mujer</button>
+    </div>
+    <select id="sort" class="sort-select" onchange="render()" aria-label="Ordenar productos">
+      <option value="featured">Ordenar: Más vendidos</option>
+      <option value="discount">Mayor descuento %</option>
+      <option value="price-asc">Menor precio primero</option>
+      <option value="price-desc">Mayor precio primero</option>
+    </select>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <!-- Beneficios -->
+  <h2 class="sec">Con NextStep <span>recibes más</span></h2>
+  <div class="why">
+    <div>🚚 Envío gratis a todo Colombia</div>
+    <div>💵 Paga al recibir en la puerta de tu casa</div>
+    <div>⚡ Descuento extra pagando online o llevando 2+ pares</div>
+    <div>💬 Confirmación inmediata de guía por WhatsApp</div>
+    <div>👟 Cambio rápido por talla sin complicaciones</div>
+    <div>📦 Despacho rápido vía Dropi (Servientrega / Interrapidísimo)</div>
+  </div>
+
+  <!-- Reseñas Verificadas -->
+  <div class="sec-head" id="resenas">
+    <h2 class="sec">Clientes <span>felices</span></h2>
+    <span class="sec-sub">⭐ 4.9 / 5.0 promedio verificado</span>
+  </div>
+  <div class="reviews-grid" id="reviews-grid"></div>
+
+  <!-- Preguntas Frecuentes (Acordeón accesible) -->
+  <section class="accordion" id="faq" aria-labelledby="faq-heading">
+    <h2 class="sec" id="faq-heading">Preguntas <span>frecuentes</span></h2>
+    <div class="faq" id="fq"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <b>NEXTSTEP</b> · Tenis para cada paso<br>
+    Envíos gratis a todo Colombia · Despachos Contraentrega Dropi (Servientrega, Interrapidísimo, Coordinadora, Envía)<br>
+    Pagos al recibir o en línea con Wompi (Tarjeta, PSE, Nequi)<br>
+    © 2026 NextStep · Todos los derechos reservados
+  </footer>
+
+  <!-- Botón Flotante Llamativo de WhatsApp en Esquina Inferior Derecha -->
+  <div class="wab-wrap" id="wab-wrap">
+    <a class="wab-bubble" id="wab-bubble" target="_blank" rel="noopener noreferrer" href="#">
+      <strong>¡Pide Contraentrega Aquí! 👟</strong>
+      <span><i class="wab-dot"></i> En línea · Respuesta rápida</span>
+    </a>
+    <a id="wab" target="_blank" rel="noopener noreferrer" href="#" aria-label="Pedir o consultar por WhatsApp">
+      <span class="wab-badge">1</span>
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M16 3C8.82 3 3 8.82 3 16c0 2.3.6 4.54 1.74 6.52L3 29l6.68-1.75A12.94 12.94 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3zm0 23.62c-2.06 0-4.08-.56-5.84-1.62l-.42-.25-3.96 1.04 1.06-3.86-.27-.4A10.56 10.56 0 0 1 5.38 16c0-5.85 4.77-10.62 10.62-10.62 5.85 0 10.62 4.77 10.62 10.62 0 5.85-4.77 10.62-10.62 10.62zm5.82-7.96c-.32-.16-1.88-.93-2.18-1.04-.29-.1-.5-.16-.72.16-.21.32-.83 1.04-1.02 1.25-.18.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.9-1.78-2.22-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.56.16-.19.21-.32.32-.54.1-.21.05-.4-.03-.56-.08-.16-.72-1.73-.99-2.37-.26-.62-.52-.54-.72-.55l-.61-.01c-.21 0-.56.08-.85.4-.3.32-1.12 1.1-1.12 2.67 0 1.58 1.15 3.1 1.31 3.32.16.21 2.26 3.45 5.48 4.84.76.33 1.36.53 1.82.68.76.24 1.46.21 2.01.12.61-.09 1.88-.77 2.15-1.51.26-.74.26-1.38.18-1.51-.08-.14-.29-.22-.61-.38z"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Toast de Prueba Social en Vivo -->
+  <div class="sales-toast" id="sales-toast" aria-live="polite">
+    <img id="st-img" src="" alt="">
+    <div class="sales-toast-txt" id="st-txt"></div>
+    <button class="sales-toast-close" type="button" onclick="hideToast()" aria-label="Cerrar notificación">✕</button>
+  </div>
+
+  <!-- Modal de Producto -->
+  <div class="ov" id="ov" onclick="closeM()">
+    <div class="md" id="md" onclick="event.stopPropagation()"></div>
+  </div>
+
+  <!-- Backdrop y Drawer del Carrito -->
+  <div class="ov" id="bk" onclick="closeC()"></div>
+  <aside class="dr" id="dr" aria-label="Carrito de compras">
+    <div class="dh">
+      <span>🛒 Tu Pedido Contraentrega</span>
+      <button type="button" onclick="closeC()" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div class="cart-perk" id="cart-perk">🚚 ¡Envío GRATIS a toda Colombia desbloqueado!</div>
+    <div id="items"></div>
+    <div id="co">
+      <div class="tt"><span>Subtotal</span><span id="subtot"></span></div>
+      <div class="tt" id="promo2x-row" style="display:none;color:#065f46;font-weight:800"><span>🔥 Combo 2+ pares (-10%)</span><span id="promo2x-val"></span></div>
+      <div class="tt"><span>Envío Colombia</span><b style="color:#065f46">GRATIS</b></div>
+      <div class="tt" style="font-size:19px;border-top:1px solid #e5e7eb;padding-top:8px"><span>Total a pagar</span><b id="tot"></b></div>
+      <div class="tt sv" style="width:100%;margin-bottom:12px"><span id="onl"></span></div>
+
+      <input id="nm" placeholder="Nombre completo *" autocomplete="name">
+      <input id="ph" placeholder="Celular / WhatsApp *" inputmode="tel" autocomplete="tel">
+      <div class="co-row">
+        <input id="dp" placeholder="Departamento *" autocomplete="address-level1">
+        <input id="ci" placeholder="Ciudad / Municipio *" autocomplete="address-level2">
+      </div>
+      <input id="ad" placeholder="Dirección exacta y barrio *" autocomplete="street-address">
+      <input id="nt" placeholder="Referencias o notas de entrega (opcional)">
+
+      <button class="w wa cta-shine" type="button" onclick="wa()">💬 Pedir Contraentrega por WhatsApp</button>
+      <button class="w" type="button" id="pb" onclick="pay()" style="background:var(--k);margin-top:8px"></button>
+    </div>
+  </aside>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

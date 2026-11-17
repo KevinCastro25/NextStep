@@ -236,6 +236,20 @@ function setF(f) {
   render();
 }
 
+function searchTag(term) {
+  const q = $("#q");
+  if (q) q.value = term;
+  if (term.toLowerCase() === "hombre") {
+    setF("h");
+  } else if (term.toLowerCase() === "dama" || term.toLowerCase() === "mujer") {
+    setF("m");
+  } else {
+    setF("all");
+  }
+  const target = $("#tenis");
+  if (target) target.scrollIntoView({ behavior: "smooth" });
+}
+
 $("#bar").onclick = e => {
   const b = e.target.closest("button");
   if (b && b.dataset.f) setF(b.dataset.f);

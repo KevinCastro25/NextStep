@@ -171,7 +171,23 @@ header {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  object-fit: cover;
+  box-shadow: 0 0 12px rgba(255, 30, 0, 0.4);
+  border: 1.5px solid rgba(255, 230, 0, 0.45);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+}
+
+.logo:hover .logo-img {
+  transform: rotate(-6deg) scale(1.06);
+  box-shadow: 0 0 18px rgba(255, 106, 0, 0.65);
 }
 
 .logo b {
@@ -1714,4 +1730,146 @@ footer b {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ---------- Footer Logo ---------- */
+.footer-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.footer-logo img {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 230, 0, 0.5);
+  box-shadow: 0 0 18px rgba(255, 30, 0, 0.4);
+}
+
+/* ---------- Sección de Contenido SEO / Cobertura Colombia ---------- */
+.seo-section {
+  max-width: 1280px;
+  margin: 48px auto 0;
+  padding: 0 24px;
+}
+
+.seo-card {
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.seo-card h2 {
+  font-size: clamp(22px, 3.2vw, 32px);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.seo-card h2 span {
+  color: var(--r);
+}
+
+.seo-card p {
+  color: #3f3f46;
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.seo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 22px 0;
+}
+
+.seo-box {
+  background: var(--g);
+  border-radius: 14px;
+  padding: 18px;
+  border-left: 4px solid var(--r);
+}
+
+.seo-box h3 {
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: var(--k);
+}
+
+.seo-box p {
+  font-size: 13px;
+  color: var(--m);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.city-cloud {
+  background: #fff;
+  border: 1px dashed var(--border);
+  padding: 18px;
+  border-radius: 14px;
+  margin-top: 18px;
+}
+
+.city-cloud strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: var(--k);
+}
+
+.city-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.city-pill {
+  background: #f4f4f5;
+  color: #3f3f46;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 99px;
+  border: 1px solid #e4e4e7;
+}
+
+.seo-tags-fast {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.seo-tag-btn {
+  background: var(--k);
+  color: var(--y);
+  border-radius: 99px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s, color 0.2s;
+}
+
+.seo-tag-btn:hover {
+  background: var(--r);
+  color: #fff;
+  transform: translateY(-2px);
 }

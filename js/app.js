@@ -176,31 +176,33 @@ const vid = u => {
 };
 
 const card = p => {
-  const stockPct = Math.min(92, Math.max(20, 100 - p.stock * 10));
   return `
   <article class="card reveal" onclick="openP(${p.id})">
     <div class="im">
       <img loading="lazy" src="${p.img}" alt="${p.n}">
-      <span class="bg">-${pc(p)}% OFF</span>
-      <span class="tag-hot">${p.tag || "🔥 TOP"}</span>
-      <span class="tag-cod">💵 Paga al recibir</span>
+      <span class="badge-discount">-${pc(p)}% OFF</span>
+      <span class="badge-cod">💵 Contraentrega</span>
+      ${p.tag ? `<span class="badge-tag">${p.tag}</span>` : ""}
       ${CFG.videos[p.id] ? '<span class="vb">▶ Video</span>' : ""}
     </div>
-    <div class="card-meta">
-      <span class="stars">★★★★★ ${p.rate || 4.9}</span>
-      <span>+${p.sold || 120} vendidos</span>
+    <div class="card-info">
+      <div class="card-meta">
+        <span class="stars">★ ${p.rate || 4.9}</span>
+        <span class="card-sold">${p.sold || 120}+ vendidos</span>
+      </div>
+      <h3 class="card-title">${p.n}</h3>
+      <div class="card-pricing">
+        <div class="pr">
+          <b>${money(p.p)}</b>
+          <s>${money(p.o)}</s>
+        </div>
+        <span class="card-savings">Ahorras ${money(p.o - p.p)}</span>
+      </div>
+      <div class="card-bottom">
+        <span class="card-shipping">🚚 Envío Gratis</span>
+        <button class="card-btn cta-shine" type="button" aria-label="Elegir talla de ${p.n}">Ver Tallas →</button>
+      </div>
     </div>
-    <h3>${p.n}</h3>
-    <div class="pr">
-      <b>${money(p.p)}</b>
-      <s>${money(p.o)}</s>
-    </div>
-    <div class="sv">Ahorras ${money(p.o - p.p)} · Envío Gratis</div>
-    <div class="stock-bar-wrap">
-      <span>🔥 ¡Solo quedan ${p.stock || 5} pares en bodega!</span>
-      <div class="stock-track"><div class="stock-fill" style="width:${stockPct}%"></div></div>
-    </div>
-    <button class="card-btn cta-shine" type="button">⚡ ¡LO QUIERO! · ELEGIR TALLA</button>
   </article>`;
 };
 
@@ -392,99 +394,205 @@ function drawM() {
     .map(v => v[2])
     .sort((a, b) => a - b);
   const al = [...new Set(p.v.map(v => v[2]))].sort((a, b) => a - b);
-  const viewers = 14 + (p.id % 19);
+  const viewers = 18 + (p.id % 24);
   const pack1Price = p.p;
   const pack2Price = Math.round(p.p * 2 * (1 - CFG.promo2x / 100));
+  const onlinePrice = Math.round(p.p * (100 - CFG.off) / 100);
 
   $("#md").innerHTML = `
-    <div>
-      <div class="im" style="border-radius:16px">
+    <div class="md-gallery">
+      <div class="md-image-wrap">
         ${sel.m == "v" && u ? vid(u) : `<img src="${im(p, sel.c)}" alt="${p.n}">`}
-        <span class="bg">-${pc(p)}% OFF</span>
-        <span class="tag-cod">💵 Pagas al recibir</span>
+        <span class="md-badge-discount">-${pc(p)}% OFF</span>
+        <span class="md-badge-cod">💵 Pagas al recibir en tu puerta</span>
+        ${u ? `<div class="md-media-toggle">
+                 <button type="button" class="${sel.m == "v" ? "" : "on"}" onclick="sel.m='f';drawM()">📸 Fotos</button>
+                 <button type="button" class="${sel.m == "v" ? "on" : ""}" onclick="sel.m='v';drawM()">▶ Video Oficial</button>
+               </div>` : ""}
       </div>
+      <div class="md-carriers-card">
+        <span class="carriers-title">📦 Despacho prioritario asegurado con:</span>
+        <div class="carriers-pills">
+          <span class="carrier-pill servientrega">Servientrega</span>
+          <span class="carrier-pill interrapidisimo">Interrapidísimo</span>
+          <span class="carrier-pill coordinadora">Coordinadora</span>
+          <span class="carrier-pill envia">Envía</span>
+        </div>
+      </div>
+      <div class="md-assurance-box">
+        <span>🔒</span>
+        <div>
+          <strong>Compra 100% Sin Riesgo</strong><br>
+          <small>No pagas por adelantado, revisas y pagas en efectivo al mensajero.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="pi">
+      <div class="md-top-bar">
+        <div class="live-viewers-pill">
+          <span class="live-dot-pulse"></span>
+          <span><b>${viewers} personas</b> viendo este par ahora</span>
+        </div>
+        <button class="md-close-btn" type="button" onclick="closeM()" aria-label="Cerrar ventana">✕</button>
+      </div>
+
+      <div class="md-rating-row">
+        <span class="stars">★★★★★ ${p.rate || 4.9}</span>
+        <span class="rating-sub">(${p.rev || 145} opiniones verificadas · ${p.sold || 230}+ entregados)</span>
+        <span class="tag-trending">🔥 Más vendido</span>
+      </div>
+
+      <h2 class="md-product-title">${p.n}</h2>
+
+      <div class="md-price-hero">
+        <div class="price-numbers">
+          <span class="price-current">${money(p.p)}</span>
+          <span class="price-strike">${money(p.o)}</span>
+          <span class="savings-tag">AHORRAS ${money(p.o - p.p)}</span>
+        </div>
+        <div class="price-sub-perks">
+          <span class="perk-pill-green">🚚 <b>Envío GRATIS</b> a toda Colombia</span>
+          <span class="perk-pill-blue">⚡ <b>+${CFG.off}% OFF en línea</b> con Wompi: ${money(onlinePrice)}</span>
+        </div>
+      </div>
+
+      <!-- Selector de Combo / Descuento 2 Pares -->
+      <div class="md-section-label">Selecciona tu paquete de compra:</div>
+      <div class="pack-grid">
+        <div class="pack-opt ${sel.pack === 1 ? "on" : ""}" onclick="setPack(1)" role="button" tabindex="0">
+          <div class="pack-radio">${sel.pack === 1 ? "●" : "○"}</div>
+          <div class="pack-details">
+            <span class="pack-title">1 Par · Precio Oferta</span>
+            <span class="pack-price-num">${money(pack1Price)}</span>
+            <small class="pack-extra">Envío gratis incluido</small>
+          </div>
+        </div>
+        <div class="pack-opt combo ${sel.pack === 2 ? "on" : ""}" onclick="setPack(2)" role="button" tabindex="0">
+          <span class="pack-badge-popular">⭐ MÁS ELEGIDO · -${CFG.promo2x}% EXTRA</span>
+          <div class="pack-radio">${sel.pack === 2 ? "●" : "○"}</div>
+          <div class="pack-details">
+            <span class="pack-title">2 Pares (Combo Doble)</span>
+            <span class="pack-price-num">${money(pack2Price)}</span>
+            <small class="pack-savings-highlight">¡Ahorras ${money(p.p * 2 - pack2Price)} adicionales!</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selector de Color -->
       ${
-        u
-          ? `<div class="sz" style="padding:10px 0 0;margin:0">
-               <button type="button" class="${sel.m == "v" ? "" : "on"}" onclick="sel.m='f';drawM()">Foto</button>
-               <button type="button" class="${sel.m == "v" ? "on" : ""}" onclick="sel.m='v';drawM()">▶ Video</button>
+        cs.length
+          ? `<div class="md-selector-header">
+               <span class="selector-title">1. Color: <strong class="highlight-val">${sel.c}</strong></span>
+             </div>
+             <div class="color-options-wrap">
+               ${cs.map(c => {
+                 const thumb = (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? `<img src="${CFG.imgs[p.id][c]}" alt="" class="color-thumb-mini">` : "";
+                 return `<button type="button" class="color-chip ${c == sel.c ? "on" : ""}" onclick="sel.c='${c}';sel.t='';sel.m='f';drawM()">${thumb}<span>${c}</span></button>`;
+               }).join("")}
              </div>`
           : ""
       }
-      <div class="carriers-strip">
-        <span>📦 Servientrega</span>
-        <span>⚡ Interrapidísimo</span>
-        <span>🚚 Coordinadora</span>
-        <span>🚀 Envía</span>
-      </div>
-    </div>
-    <div class="pi">
-      <div class="live-viewers">👁️ ${viewers} personas están viendo esta referencia ahora</div>
-      <div><span class="stars">★★★★★ ${p.rate || 4.9}</span> <small class="mu">(${p.rev || 120} reseñas · +${p.sold || 150} vendidos)</small></div>
-      <h2>${p.n}</h2>
-      <div class="pr big"><b>${money(p.p)}</b><s>${money(p.o)}</s></div>
-      <div class="sv">Ahorras ${money(p.o - p.p)} · En línea ${money(Math.round(p.p * (100 - CFG.off) / 100))}</div>
 
-      <div class="stock-bar-wrap" style="margin-top:12px">
-        <span>🔥 ¡Últimas ${p.stock || 5} unidades disponibles en bodega!</span>
-        <div class="stock-track"><div class="stock-fill" style="width:78%"></div></div>
+      <!-- Selector de Talla -->
+      <div class="md-selector-header">
+        <span class="selector-title">2. Talla Nacional: <strong class="highlight-val">${sel.t || "Selecciona una opción"}</strong></span>
+        <button type="button" class="sz-guide-link" onclick="toggleSizeGuide()">📏 ${sel.guide ? "Ocultar guía" : "Guía de tallas (cm)"}</button>
       </div>
 
-      <div class="pack-grid">
-        <button type="button" class="pack-opt ${sel.pack === 1 ? "on" : ""}" onclick="setPack(1)">
-          <strong>1 Par · Oferta</strong><br>
-          <span style="color:var(--r);font-weight:900">${money(pack1Price)}</span><br>
-          <small class="mu">Envío gratis</small>
-        </button>
-        <button type="button" class="pack-opt ${sel.pack === 2 ? "on" : ""}" onclick="setPack(2)">
-          <span class="pack-badge">MÁS ELEGIDO</span>
-          <strong>2 Pares · -${CFG.promo2x}%</strong><br>
-          <span style="color:var(--r);font-weight:900">${money(pack2Price)}</span><br>
-          <small class="mu">Ahorras ${money(p.p * 2 - pack2Price)} extra</small>
-        </button>
-      </div>
-
-      ${
-        cs.length
-          ? `<h4 style="margin-top:10px">1. Elige Color: <span style="color:var(--r)">${sel.c}</span></h4>
-             <div class="sz">${cs.map(c => {
-               const thumb = (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? `<img src="${CFG.imgs[p.id][c]}" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px">` : "";
-               return `<button type="button" class="${c == sel.c ? "on" : ""}" onclick="sel.c='${c}';sel.t='';sel.m='f';drawM()">${thumb}${c}</button>`;
-             }).join("")}</div>`
-          : ""
-      }
-
-      <div class="sz-head">
-        <h4>2. Elige tu Talla: <span style="color:var(--r)">${sel.t || "Selecciona"}</span></h4>
-        <button type="button" class="sz-guide-btn" onclick="toggleSizeGuide()">📏 ${sel.guide ? "Ocultar guía" : "Guía de tallas (cm)"}</button>
-      </div>
       ${
         sel.guide && typeof SIZE_GUIDE !== "undefined"
-          ? `<div class="sz-table">${SIZE_GUIDE.map(s => `<div>Talla ${s[0]}<br><small class="mu">${s[1]}</small></div>`).join("")}</div>`
+          ? `<div class="sz-table-card">
+               <div class="sz-table-intro">Horma estándar nacional colombiana. Si calzas 38 normal, pide 38:</div>
+               <div class="sz-table-grid">${SIZE_GUIDE.map(s => `<div><b>Talla ${s[0]}</b><small>${s[1]}</small></div>`).join("")}</div>
+             </div>`
           : ""
       }
-      <div class="sz">${ts.map(t => `<button type="button" class="${t == sel.t ? "on" : ""}" onclick="sel.t='${t}';drawM()">${t}</button>`).join("")}</div>
 
-      <button class="w cta-shine" type="button" onclick="add()">🚚 Pedir Contraentrega (Pagas al recibir)</button>
-      <button class="w wa" type="button" onclick="waProduct()">💬 Pedir este par directo por WhatsApp</button>
+      <div class="size-options-grid">
+        ${ts.map(t => `<button type="button" class="size-tile ${t == sel.t ? "on" : ""}" onclick="sel.t='${t}';drawM()">${t}</button>`).join("")}
+      </div>
 
-      <details open style="margin-top:12px">
-        <summary>Detalles del calzado</summary>
-        <ul>
-          <li>${cs.length || 1} color(es) disponible(s)</li>
-          <li>Tallas disponibles: ${al[0]} a ${al[al.length - 1]} (horma estándar nacional)</li>
-          <li>Categoría: ${{ h: "Hombre", m: "Mujer", u: "Unisex" }[p.g]}</li>
-        </ul>
+      <!-- Barra de Urgencia y Stock -->
+      <div class="stock-urgency-box">
+        <div class="stock-urgency-header">
+          <span>🔥 <b>¡Alta demanda!</b> Quedan pocas unidades en bodega</span>
+          <span class="stock-countdown">Despacho en 24h</span>
+        </div>
+        <div class="stock-urgency-track"><div class="stock-urgency-fill" style="width:84%"></div></div>
+      </div>
+
+      <!-- Botones Principales de Compra (Llamativos y de Alta Conversión) -->
+      <div class="md-actions-wrap">
+        <button class="btn-main-cod cta-shine" type="button" onclick="add()">
+          <span class="btn-ico">🚚</span>
+          <span class="btn-text-wrap">
+            <span class="btn-primary-title">PEDIR CONTRAENTREGA (PAGAS AL RECIBIR)</span>
+            <span class="btn-primary-sub">Sin tarjetas · Pagas en efectivo al mensajero en tu puerta</span>
+          </span>
+        </button>
+
+        <button class="btn-main-wa" type="button" onclick="waProduct()">
+          <span class="btn-ico">💬</span>
+          <span class="btn-text-wrap">
+            <span class="btn-wa-title">PEDIR ESTE PAR POR WHATSAPP</span>
+            <span class="btn-wa-sub">Respuesta inmediata · Confirmamos tu pedido y talla</span>
+          </span>
+        </button>
+      </div>
+
+      <!-- 3 Pilares de Confianza -->
+      <div class="trust-pillars-row">
+        <div class="trust-pillar">
+          <span class="trust-icon">🚚</span>
+          <div>
+            <b>Envío 100% Gratis</b>
+            <small>A más de 1.000 municipios</small>
+          </div>
+        </div>
+        <div class="trust-pillar">
+          <span class="trust-icon">💵</span>
+          <div>
+            <b>Pagas al Recibir</b>
+            <small>Cero riesgo con pago contraentrega</small>
+          </div>
+        </div>
+        <div class="trust-pillar">
+          <span class="trust-icon">↩️</span>
+          <div>
+            <b>Cambio por Talla</b>
+            <small>Garantía directa de cambio</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acordeones informativos -->
+      <details class="md-details" open>
+        <summary>👟 Características y Horma</summary>
+        <div class="details-body">
+          <ul>
+            <li><strong>Colores:</strong> ${cs.join(", ") || "Color único"}</li>
+            <li><strong>Tallas:</strong> ${al[0]} a ${al[al.length - 1]} (horma estándar colombiana)</li>
+            <li><strong>Categoría:</strong> ${{ h: "Hombre", m: "Mujer", u: "Unisex" }[p.g] || "Unisex"}</li>
+            <li><strong>Materiales:</strong> Capellada transpirable, suela antideslizante con amortiguación de alto impacto.</li>
+          </ul>
+        </div>
       </details>
-      <details>
-        <summary>Envío gratis y pago al recibir</summary>
-        <p>Envío gratis a toda Colombia en ${CFG.envio}. Pagas en efectivo al recibir o en línea con Wompi (${CFG.off}% OFF extra).</p>
+
+      <details class="md-details">
+        <summary>🚚 Envíos y Tiempos de Entrega</summary>
+        <div class="details-body">
+          <p>Despachamos tu pedido por <strong>Servientrega, Interrapidísimo, Coordinadora o Envía</strong>. El tiempo estimado es de <strong>${CFG.envio}</strong>. Te enviamos el número de guía por WhatsApp para rastrear tu paquete en todo momento.</p>
+        </div>
       </details>
-      <details>
-        <summary>Cambios y garantía</summary>
-        <p>Cambio fácil por talla. 5 días hábiles de retracto (Ley 1480). Confirmamos tu despacho por WhatsApp.</p>
+
+      <details class="md-details">
+        <summary>🛡️ Garantía y Políticas de Devolución</summary>
+        <div class="details-body">
+          <p>Cuentas con 30 días de garantía por defectos de fábrica y 5 días hábiles de retracto según la Ley 1480. Si necesitas cambio de talla, te asistimos de inmediato por WhatsApp.</p>
+        </div>
       </details>
-      <button class="x" type="button" onclick="closeM()">Cerrar ventana</button>
+      <button class="x" type="button" onclick="closeM()">✕ Cerrar ventana</button>
     </div>`;
 }
 

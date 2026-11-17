@@ -289,17 +289,35 @@ nav a:hover {
   .logo-tag {
     display: none;
   }
-  #q {
-    width: 145px;
-    flex: 1;
-  }
+}
+
+@media (max-width: 600px) {
   header {
+    flex-wrap: wrap;
     padding: 10px 12px;
-    gap: 10px;
+    gap: 8px 10px;
+  }
+  .logo {
+    font-size: 20px;
+    gap: 6px;
+  }
+  .logo-img {
+    width: 30px;
+    height: 30px;
+  }
+  .search-wrap {
+    order: 3;
+    width: 100%;
+  }
+  #q {
+    width: 100%;
+    padding: 9px 14px;
+    font-size: 14px;
   }
   #cb {
-    padding: 9px 13px;
-    font-size: 13px;
+    margin-left: auto;
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }
 
@@ -429,11 +447,13 @@ nav a:hover {
   .sl {
     grid-template-columns: 1fr;
     text-align: center;
-    padding: 30px 20px 54px;
+    padding: 26px 16px 52px;
+    min-height: auto;
+    gap: 16px;
   }
   .sl img {
-    max-height: 230px;
-    max-width: 280px;
+    max-height: 220px;
+    max-width: 250px;
   }
   .hero-img-wrap {
     order: -1;
@@ -445,6 +465,47 @@ nav a:hover {
     left: 50%;
     transform: translateX(-50%);
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .sl {
+    padding: 18px 12px 46px;
+  }
+  .hero-kicker {
+    font-size: 10px;
+    padding: 3px 8px;
+    margin-bottom: 6px;
+  }
+  .sl h1 {
+    font-size: clamp(24px, 7.8vw, 34px);
+    letter-spacing: -1px;
+    line-height: 1.05;
+  }
+  .sl p {
+    font-size: 13px;
+    margin: 6px auto 14px;
+    max-width: 300px;
+  }
+  .sl img {
+    max-height: 175px;
+    max-width: 200px;
+    border-radius: 14px;
+  }
+  .hero-badge {
+    font-size: 10px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    bottom: 6px;
+  }
+  .cta {
+    padding: 11px 20px;
+    font-size: 12.5px;
+  }
+  .ar {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
   }
 }
 
@@ -1160,8 +1221,15 @@ nav a:hover {
 }
 
 @media (max-width: 740px) {
+  .ov {
+    align-items: flex-end;
+    padding: 0;
+  }
   .md {
     grid-template-columns: 1fr;
+    max-height: 94vh;
+    border-radius: 20px 20px 0 0;
+    width: 100%;
   }
 }
 
@@ -1644,17 +1712,14 @@ footer b {
   .wab-wrap {
     right: 14px;
     bottom: 14px;
-    gap: 8px;
+    gap: 0;
   }
   .wab-bubble {
-    padding: 8px 11px;
-  }
-  .wab-bubble strong {
-    font-size: 11.5px;
+    display: none;
   }
   #wab {
-    width: 56px;
-    height: 56px;
+    width: 54px;
+    height: 54px;
   }
   #wab svg {
     width: 28px;
@@ -1872,4 +1937,335 @@ footer b {
   background: var(--r);
   color: #fff;
   transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   OPTIMIZACIÓN RESPONSIVE AVANZADA PARA DISPOSITIVOS MÓVILES (SMARTPHONES)
+   ========================================================================== */
+
+/* Reglas globales anti-desbordamiento */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+img, video, iframe, input, select, button {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .promo-banner {
+    margin: 24px 14px 0;
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  /* 1. Barra Flash y Marquesina */
+  .flash-bar {
+    font-size: 11px;
+    padding: 6px 10px;
+    gap: 6px;
+    line-height: 1.35;
+  }
+  .flash-pill {
+    font-size: 9.5px;
+    padding: 2px 7px;
+  }
+  .flash-timer {
+    font-size: 11.5px;
+    padding: 2px 6px;
+  }
+  .mq {
+    font-size: 11px;
+    padding: 7px 38px 7px 0;
+  }
+  .mq-toggle {
+    width: 24px;
+    height: 24px;
+    font-size: 10.5px;
+    right: 6px;
+  }
+
+  /* 2. Barra de Confianza (2x2 cuadrícula) */
+  .tr {
+    grid-template-columns: 1fr 1fr;
+  }
+  .tr div {
+    padding: 12px 6px;
+    font-size: 11px;
+  }
+  .tr small {
+    font-size: 9.5px;
+  }
+
+  /* 3. Encabezados de Sección */
+  .sec-head {
+    padding: 26px 12px 10px;
+    gap: 8px;
+  }
+  .sec {
+    font-size: 21px;
+    padding: 26px 12px 10px;
+  }
+  .sec-sub {
+    font-size: 11.5px;
+    padding: 4px 10px;
+  }
+
+  /* 4. Grilla de Productos en 2 Columnas Estilo App Móvil */
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+    padding: 0 10px;
+  }
+  .card {
+    padding: 7px;
+    border-radius: 12px;
+  }
+  .im {
+    border-radius: 8px;
+  }
+  .bg {
+    font-size: 10px;
+    padding: 2px 7px;
+    top: 5px;
+    left: 5px;
+  }
+  .tag-hot {
+    font-size: 8.5px;
+    padding: 2px 6px;
+    top: 5px;
+    right: 5px;
+  }
+  .tag-cod {
+    font-size: 8.5px;
+    padding: 2px 5px;
+    bottom: 5px;
+    left: 5px;
+  }
+  .vb {
+    font-size: 9px;
+    padding: 2px 5px;
+    bottom: 5px;
+    right: 5px;
+  }
+  .card-meta {
+    font-size: 10px;
+    margin-top: 5px;
+  }
+  .card h3 {
+    font-size: 12px;
+    margin: 3px 0 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 31px;
+    line-height: 1.25;
+  }
+  .pr b {
+    font-size: 15px;
+  }
+  .pr s {
+    font-size: 11px;
+  }
+  .sv {
+    font-size: 9.5px;
+    padding: 2px 5px;
+    margin-top: 2px;
+  }
+  .stock-bar-wrap {
+    font-size: 9.5px;
+    margin-top: 5px;
+  }
+  .stock-track {
+    height: 4px;
+  }
+  .card-btn {
+    font-size: 10.5px;
+    padding: 8px 4px;
+    margin-top: 7px;
+    border-radius: 8px;
+  }
+
+  /* 5. Banner Promocional 2x */
+  .promo-banner {
+    margin: 20px 10px 0;
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
+  .promo-banner h3 {
+    font-size: 17px;
+  }
+  .promo-banner p {
+    font-size: 12.5px;
+  }
+  .promo-banner .cta {
+    width: 100%;
+    text-align: center;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  /* 6. Categorías (Tiles) */
+  .tiles {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .tile {
+    height: 115px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+  .tile strong {
+    font-size: 19px;
+  }
+  .tile span {
+    font-size: 11px;
+  }
+
+  /* 7. Barra de Filtro y Ordenamiento */
+  .bar {
+    padding: 0 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .chips {
+    width: 100%;
+    display: flex;
+  }
+  .chip {
+    flex: 1;
+    text-align: center;
+    padding: 7px 6px;
+    font-size: 12px;
+  }
+  .sort-select {
+    width: 100%;
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  /* 8. Beneficios y Reseñas */
+  .why {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .why div {
+    padding: 12px 14px;
+    font-size: 12.5px;
+  }
+  .reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 0 10px;
+  }
+  .rev-card {
+    padding: 14px;
+    font-size: 13px;
+  }
+
+  /* 9. Sección SEO y Preguntas Frecuentes */
+  .seo-section {
+    padding: 0 10px;
+    margin-top: 28px;
+  }
+  .seo-card {
+    padding: 18px 12px;
+    border-radius: 14px;
+  }
+  .seo-card h2 {
+    font-size: 19px;
+  }
+  .seo-card p {
+    font-size: 12.5px;
+  }
+  .seo-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .city-cloud {
+    padding: 12px 10px;
+  }
+  .city-pill {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+  .seo-tag-btn {
+    font-size: 11px;
+    padding: 5px 11px;
+  }
+  .faq {
+    padding: 0 10px;
+  }
+  .faq details {
+    padding: 0 12px;
+    border-radius: 10px;
+  }
+  .faq summary {
+    font-size: 13.5px;
+    padding: 13px 0;
+  }
+  .faq details p {
+    font-size: 12.5px;
+  }
+
+  /* 10. Carrito Drawer */
+  .dr {
+    width: 100%;
+  }
+  #co {
+    padding: 14px;
+  }
+  #co input {
+    font-size: 16px; /* Evita zoom automático en Safari iOS */
+    padding: 11px 12px;
+    margin-bottom: 8px;
+  }
+  .co-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* 11. Footer */
+  footer {
+    padding: 32px 14px 90px;
+    font-size: 12px;
+  }
+  .footer-logo {
+    font-size: 18px;
+  }
+  .footer-logo img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Pantallas Extra Pequeñas (≤ 360px como iPhone SE / Galaxy Mini) */
+@media (max-width: 360px) {
+  .logo {
+    font-size: 18px;
+  }
+  .logo-img {
+    width: 26px;
+    height: 26px;
+  }
+  #cb {
+    padding: 7px 10px;
+    font-size: 11.5px;
+  }
+  .grid {
+    gap: 6px;
+    padding: 0 6px;
+  }
+  .card {
+    padding: 6px;
+  }
+  .pr b {
+    font-size: 14px;
+  }
 }

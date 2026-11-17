@@ -154,7 +154,7 @@
       <a href="#faq">Preguntas</a>
     </nav>
     <div class="search-wrap">
-      <input id="q" type="search" placeholder="Buscar tenis o marca..." oninput="render()" aria-label="Buscar tenis">
+      <input id="q" type="search" placeholder="Buscar tenis o marca..." oninput="lim=24;render()" aria-label="Buscar tenis">
     </div>
     <button id="cb" type="button" onclick="openC()">🛒 Carrito <span id="cc">0</span></button>
   </header>
@@ -212,6 +212,9 @@
     </select>
   </div>
   <div class="grid" id="grid"></div>
+  <div style="text-align:center;padding:24px 16px">
+    <button id="more" class="cta-more" style="display:none" onclick="lim+=24;render()" type="button">Ver más tenis</button>
+  </div>
 
   <!-- Beneficios -->
   <h2 class="sec">Con NextStep <span>recibes más</span></h2>

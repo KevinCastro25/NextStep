@@ -2269,3 +2269,26 @@ img, video, iframe, input, select, button {
     font-size: 14px;
   }
 }
+
+/* Botón Ver Más Tenis (Paginación) */
+.cta-more {
+  display: inline-block;
+  background: var(--k);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 14px 36px;
+  border-radius: 999px;
+  border: 2px solid var(--k);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+.cta-more:hover {
+  background: var(--r);
+  border-color: var(--r);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(225, 6, 0, 0.3);
+}

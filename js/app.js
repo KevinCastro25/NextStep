@@ -10,6 +10,7 @@ const promoDiscount = () => (qtyTotal() >= 2 ? Math.round(subtot() * (CFG.promo2
 const tot = () => subtot() - promoDiscount();
 const onl = () => Math.round(tot() * (100 - CFG.off) / 100);
 
+let lim = 24;
 let cart = [];
 let flt = "all";
 let cur = null;
@@ -20,6 +21,8 @@ let heroPaused = false;
 let tx = 0;
 let toastTimer = null;
 let toastIdx = 0;
+
+const im = (p, c) => (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? CFG.imgs[p.id][c] : p.img;
 
 try {
   cart = JSON.parse(localStorage.zc || "[]");
@@ -226,17 +229,24 @@ function render() {
   }
 
   $("#catalog-count").textContent = `${list.length} ${list.length === 1 ? "referencia disponible" : "referencias listas para despacho"}`;
-  $("#grid").innerHTML = list.map(card).join("") || "<p class='mu'>No encontramos tenis con ese filtro.</p>";
+  const visible = list.slice(0, lim);
+  $("#grid").innerHTML = visible.map(card).join("") || "<p class='mu'>No encontramos tenis con ese filtro.</p>";
+  const moreBtn = $("#more");
+  if (moreBtn) {
+    moreBtn.style.display = list.length > lim ? "inline-block" : "none";
+  }
   observeReveals();
 }
 
 function setF(f) {
   flt = f;
+  lim = 24;
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.f == f));
   render();
 }
 
 function searchTag(term) {
+  lim = 24;
   const q = $("#q");
   if (q) q.value = term;
   if (term.toLowerCase() === "hombre") {
@@ -389,7 +399,7 @@ function drawM() {
   $("#md").innerHTML = `
     <div>
       <div class="im" style="border-radius:16px">
-        ${sel.m == "v" && u ? vid(u) : `<img src="${p.img}" alt="${p.n}">`}
+        ${sel.m == "v" && u ? vid(u) : `<img src="${im(p, sel.c)}" alt="${p.n}">`}
         <span class="bg">-${pc(p)}% OFF</span>
         <span class="tag-cod">💵 Pagas al recibir</span>
       </div>
@@ -437,7 +447,10 @@ function drawM() {
       ${
         cs.length
           ? `<h4 style="margin-top:10px">1. Elige Color: <span style="color:var(--r)">${sel.c}</span></h4>
-             <div class="sz">${cs.map(c => `<button type="button" class="${c == sel.c ? "on" : ""}" onclick="sel.c='${c}';sel.t='';drawM()">${c}</button>`).join("")}</div>`
+             <div class="sz">${cs.map(c => {
+               const thumb = (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? `<img src="${CFG.imgs[p.id][c]}" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px">` : "";
+               return `<button type="button" class="${c == sel.c ? "on" : ""}" onclick="sel.c='${c}';sel.t='';sel.m='f';drawM()">${thumb}${c}</button>`;
+             }).join("")}</div>`
           : ""
       }
 
@@ -495,7 +508,7 @@ function add() {
       t: sel.t,
       p: cur.p,
       q: addQty,
-      img: cur.img
+      img: im(cur, sel.c)
     });
   }
   save();

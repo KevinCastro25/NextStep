@@ -22,6 +22,17 @@ let tx = 0;
 let toastTimer = null;
 let toastIdx = 0;
 
+const escapeHtml = s =>
+  String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// Optimizador de imágenes CDN: convierte a WebP moderno, redimensiona y extrae primer frame de GIFs
+const optImg = (url, width = 480) => {
+  if (!url || typeof url !== "string") return "";
+  if (!url.startsWith("http")) return url;
+  if (url.includes("wsrv.nl")) return url;
+  return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=78&n=1`;
+};
+
 const im = (p, c) => (CFG.imgs && CFG.imgs[p.id] && CFG.imgs[p.id][c]) ? CFG.imgs[p.id][c] : p.img;
 
 try {
@@ -126,7 +137,7 @@ $("#hero").innerHTML =
         <a class="cta cta-shine" href="${s.l}">${s.b}</a>
       </div>
       <div class="hero-img-wrap">
-        <img src="${s.i}" alt="${s.h.replace(/<[^>]+>/g, " ")}">
+        <img src="${optImg(s.i, 600)}" onerror="this.onerror=null;this.src='${escapeHtml(s.i)}'" alt="${escapeHtml(s.h.replace(/<[^>]+>/g, " "))}" width="440" height="410" ${x === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">
         <span class="hero-badge">${s.badge}</span>
       </div>
     </div>`
@@ -181,9 +192,6 @@ const normStr = s =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
-
-const escapeHtml = s =>
-  String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 function getSearchIndex(p) {
   if (p._idx) return p._idx;
@@ -242,7 +250,7 @@ const card = p => {
   return `
   <article class="card reveal" onclick="openP(${p.id})">
     <div class="im">
-      <img loading="lazy" src="${p.img}" alt="${p.n}">
+      <img loading="lazy" src="${optImg(p.img, 420)}" onerror="this.onerror=null;this.src='${escapeHtml(p.img)}'" alt="${escapeHtml(p.n)}" width="300" height="300" decoding="async">
       <span class="badge-discount">-${pc(p)}% OFF</span>
       ${p.tag ? `<span class="badge-tag">${p.tag}</span>` : ""}
       ${CFG.videos[p.id] ? '<span class="vb">▶ Video</span>' : ""}
@@ -362,9 +370,9 @@ $("#bar").onclick = e => {
 
 // ---------- 5. Categorías, Reels, Reseñas y FAQ ----------
 $("#tiles").innerHTML = [
-  ["Hombre", "h", P[2].img, "Ver colección masculina →"],
-  ["Mujer", "m", P[1].img, "Ver colección femenina →"],
-  ["Unisex", "all", P[0].img, "Ver todos los estilos →"]
+  ["Hombre", "h", optImg("https://d39ru7awumhhs2.cloudfront.net/colombia/products/1884278/1753387306WhatsApp%20Image%202025-07-24%20at%202.57.47%20PM.jpeg", 420), "Ver colección masculina →"],
+  ["Mujer", "m", optImg("https://d39ru7awumhhs2.cloudfront.net/colombia/products/1380341/17296178661.jpg", 420), "Ver colección femenina →"],
+  ["Unisex", "all", optImg("https://d39ru7awumhhs2.cloudfront.net/colombia/products/2099522/1772646458REF%20NIKE%20AIR%20FORCE%20ONE%20-%20RXR%20COMPANY%20(3).jpg", 420), "Ver todos los estilos →"]
 ]
   .map(
     t => `
@@ -506,7 +514,7 @@ function drawM() {
   $("#md").innerHTML = `
     <div class="md-gallery">
       <div class="md-image-wrap">
-        ${sel.m == "v" && u ? vid(u) : `<img src="${im(p, sel.c)}" alt="${p.n}">`}
+        ${sel.m == "v" && u ? vid(u) : `<img src="${optImg(im(p, sel.c), 600)}" onerror="this.onerror=null;this.src='${escapeHtml(im(p, sel.c))}'" alt="${escapeHtml(p.n)}" width="450" height="450" decoding="async">`}
         <span class="md-badge-discount">-${pc(p)}% OFF</span>
         <span class="md-badge-cod">💵 Pagas al recibir en tu puerta</span>
         ${u ? `<div class="md-media-toggle">
@@ -800,7 +808,7 @@ function drawC() {
         .map(
           (i, x) => `
           <div class="it">
-            <img src="${i.img}" alt="${i.n}">
+            <img src="${optImg(i.img, 140)}" onerror="this.onerror=null;this.src='${escapeHtml(i.img)}'" alt="${escapeHtml(i.n)}" width="64" height="64" loading="lazy" decoding="async">
             <div>
               <b>${i.n}</b><br>
               <small class="mu">${i.c ? i.c + " · " : ""}Talla ${i.t}</small><br>
@@ -949,13 +957,8 @@ function observeReveals() {
     );
   }
   els.forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.95) {
-      el.classList.add("vis");
-    } else {
-      el.classList.add("pre");
-      revealObserver.observe(el);
-    }
+    el.classList.add("pre");
+    revealObserver.observe(el);
   });
 }
 

@@ -31966,7 +31966,7 @@ const P = [
     "sold": 96,
     "stock": 8,
     "tag": "⚡ OFERTA FLASH",
-    "img": "https://d39ru7awumhhs2.cloudfront.net/colombia/products/1988321/17792254731778020964GUÍA%20DE%20TALLAS%20DAMA.png",
+    "img": "https://d39ru7awumhhs2.cloudfront.net/colombia/products/2148286/1778469573WhatsApp%20Image%202026-05-10%20at%208.03.23%20PM%20(2).jpeg",
     "v": [
       [
         1838378,

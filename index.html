@@ -39,7 +39,16 @@
   <meta name="twitter:description" content="Paga al recibir en cualquier ciudad o municipio de Colombia. Calzado deportivo, urbano y confort.">
   <meta name="twitter:image" content="assets/logo.jpg">
 
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- Preconnect a CDN de imágenes Dropi & Proxy WebP -->
+  <link rel="preconnect" href="https://wsrv.nl" crossorigin>
+  <link rel="dns-prefetch" href="https://wsrv.nl">
+  <link rel="preconnect" href="https://d39ru7awumhhs2.cloudfront.net" crossorigin>
+  <link rel="dns-prefetch" href="https://d39ru7awumhhs2.cloudfront.net">
+
+  <!-- Preload del recurso LCP crítico con máxima prioridad -->
+  <link rel="preload" as="image" href="https://wsrv.nl/?url=https%3A%2F%2Fd39ru7awumhhs2.cloudfront.net%2Fcolombia%2Fproducts%2F1380341%2F17296178661.jpg&w=600&output=webp&q=80" fetchpriority="high">
+
+  <link rel="stylesheet" href="css/styles.min.css">
 
   <!-- Schema.org Datos Estructurados JSON-LD para Google (Rich Snippets) -->
   <script type="application/ld+json">
@@ -127,7 +136,7 @@
 <body>
   <!-- Marquesina superior con botón accesible de pausa/reanudar -->
   <div class="mq" id="mq-wrap">
-    <div id="mq"></div>
+    <div id="mq"><span>🚚 Envío GRATIS a toda Colombia</span><span>💵 Pagas al recibir en tu casa</span><span>🔥 Lleva 2 pares con 10% OFF extra</span><span>⚡ +5% OFF adicional pagando online</span><span>🚚 Envío GRATIS a toda Colombia</span><span>💵 Pagas al recibir en tu casa</span><span>🔥 Lleva 2 pares con 10% OFF extra</span><span>⚡ +5% OFF adicional pagando online</span></div>
     <button class="mq-toggle" id="mq-toggle" type="button" aria-label="Pausar barra de anuncios" title="Pausar barra de anuncios">⏸</button>
   </div>
 
@@ -141,7 +150,10 @@
   <!-- Header Sticky con Logo Oficial NextStep -->
   <header>
     <a href="#" class="logo" aria-label="NextStep Colombia Inicio">
-      <img src="assets/logo.jpg" alt="NextStep Calzado y Tenis Logo" class="logo-img" width="36" height="36">
+      <picture>
+        <source srcset="assets/logo.webp" type="image/webp">
+        <img src="assets/logo.jpg" alt="NextStep Calzado y Tenis Logo" class="logo-img" width="36" height="36" decoding="async">
+      </picture>
       <span>NextStep<b>.</b></span>
       <span class="logo-tag">CONTRAENTREGA</span>
     </a>
@@ -162,7 +174,25 @@
   </header>
 
   <!-- Hero Slider -->
-  <section class="hero" id="hero" aria-label="Promociones principales"></section>
+  <section class="hero" id="hero" aria-label="Promociones principales">
+    <div class="sl on" style="background:linear-gradient(120deg,#ff1e00 0%,#7a0000 100%)">
+      <div style="position:relative;z-index:2">
+        <span class="hero-kicker">🔥 Liquidación Flash · Envío Gratis</span>
+        <h1>Hasta -42% OFF</h1>
+        <p>Tenis urbanos y deportivos desde $109.900. Paga en casa cuando te lleguen.</p>
+        <a class="cta cta-shine" href="#ofertas">Ver ofertas ahora →</a>
+      </div>
+      <div class="hero-img-wrap">
+        <img src="https://wsrv.nl/?url=https%3A%2F%2Fd39ru7awumhhs2.cloudfront.net%2Fcolombia%2Fproducts%2F1380341%2F17296178661.jpg&w=600&output=webp&q=80"
+             onerror="this.onerror=null;this.src='https://d39ru7awumhhs2.cloudfront.net/colombia/products/1380341/17296178661.jpg'"
+             alt="Hasta -42% OFF"
+             width="440" height="410"
+             fetchpriority="high"
+             decoding="async">
+        <span class="hero-badge">💵 Paga al recibir</span>
+      </div>
+    </div>
+  </section>
 
   <!-- Trust Bar -->
   <div class="tr">
@@ -332,7 +362,10 @@
   <!-- Footer con Logo Oficial y Datos de Confianza -->
   <footer>
     <a href="#" class="footer-logo" aria-label="NextStep Colombia Inicio">
-      <img src="assets/logo.jpg" alt="NextStep Colombia Calzado y Tenis" width="44" height="44">
+      <picture>
+        <source srcset="assets/logo.webp" type="image/webp">
+        <img src="assets/logo.jpg" alt="NextStep Colombia Calzado y Tenis" width="44" height="44" loading="lazy" decoding="async">
+      </picture>
       <span>NEXTSTEP<b>.</b></span>
     </a>
     <p><b>NEXTSTEP COLOMBIA</b> · Tu tienda de calzado especializado, tenis deportivos y urbanos con cobertura nacional.</p>
@@ -398,7 +431,7 @@
     </div>
   </aside>
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+  <script defer src="js/data.min.js"></script>
+  <script defer src="js/app.js"></script>
 </body>
 </html>
